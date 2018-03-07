@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html  >
+
+<!-- HEAD START -->
+  <head>    
+  
+
+  </head> 
+    
+
+     <body ng-controller="BloxController as BloxCtrl"> 
+
+   <div id="header">
+         <img class="logo" src="/img/grow-logo.svg">
+        
+          <div class="logo-block">
+
+            <h1>Grow </h1>
+            <h4>Better soil, Better food. </h4>
+        </div>
+        <div class="user-menu">
+            <button  type="button" ng-click="BloxCtrl.saveData()" class="btn  btn-primary ">{{BloxCtrl.saveLabel}}</button>
+            <button  type="button"  ng-click="BloxCtrl.LogOutPrompt()" class="btn  btn-danger ">Logout</button>
+            <a href="/intro.html" target="_blank">How it works</a>
+
+        </div>
+   
+    </div>  
+ <form name="growForm" class="main">
+      <div class="loader" ng-show="!BloxCtrl.loaded">
+            <h2>Loading...</h2>
+            <div class='uil-rolling-css' style='transform:scale(0.3);'><div><div></div><div></div></div></div>
+      </div>
+      <div class="container" ng-show="BloxCtrl.loaded" style="width:{{BloxCtrl.getFullWidth()}}px; ">
+        <div class="row"  >
+
+        <!-- season START -->
+
+
+          <!-- MONTH COLUMN -->
+        
+        	<div class="col-md-2" id="monthsColumn" style="width:220px">
+            <div class="season" ng-repeat="season in BloxCtrl.seasons track by $index" >
+            	<div class="seasonrow seasonname {{BloxCtrl.getCurrentSeason(season)}} seasonname-{{BloxCtrl.getVisibility(season)}}" >
+                <h2><span class="name">{{season.type}}</span><br>{{season.year}} <span ng-show="season.type=='Summer'" class="year">- {{season.year+1}}</span></h2>
+                <a class="editLink fa {{BloxCtrl.getVisibility(season)}}" title="Show/Hide" ng-click="BloxCtrl.toggleSeason(season)"></a>
+              </div>
+              <div class="seasonColumn" ng-show="season.visible">
+                <div class="monthCell {{BloxCtrl.getCurrentMonth(season,month)}}" ng-repeat="month in BloxCtrl.getMonthsNames(season.type) track by $index"" >
+                  <h3 class="month">{{month}}
+                  <!--<button ng-click="BloxCtrl.getJobs()" type="button" >Jobs</button>
+                    <a ng-show="BloxCtrl.hasJobs(season,month)" uib-popover-html="BloxCtrl.getJobs(season,month)" popover-trigger="mouseenter" popover-placement="auto right" class="jobIcon"><span class='fa fa-leaf lefticon greenicon'></span></a> 
+                    <span ng-hide="BloxCtrl.hasJobs(season,month)" style="width:20px; display:inline-block;"></span> -->
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Season -->
+          <div ng-repeat="season in BloxCtrl.seasons" class="">
+
+          <!-- Seedlings COLUMN -->
+
+          <div class="col-md-2 jobsColumn {{BloxCtrl.getSeedlingVisibility()}}"  >
+            <div class="cell seasonrow" ><h2 ng-show="BloxCtrl.showSeedlings">Seedlings list</h2><a ng-click="BloxCtrl.toggleSeedlings()"><span class="editLink fa fa-arrow-left" title="Hide" ng-show="BloxCtrl.showSeedlings"></span><span ng-show="!BloxCtrl.showSeedlings" class="editLink fa fa-arrow-right" title="Show"></span></a></div>
+            <div ng-show="season.visible">
+              <div class="cell " ng-repeat="seedlingMonth in season.seedlings" >
+                  <div class="emptyCell">
+                    <div class="plantRow">
+                      <div ng-show="BloxCtrl.showSeedlings" ng-bind-html="BloxCtrl.listSeedlings(seedlingMonth)"></div>
+                      <p ng-click="BloxCtrl.toggleSeedlings()" ng-show="!BloxCtrl.showSeedlings" ng-bind-html="BloxCtrl.listSeedlingsNumber(seedlingMonth)"></p>
+                  </div>
+                  </div>
+              </div>
+            </div>
+          </div> 
+
+
+          <div ng-repeat="blox in season.bloxs" class="col-md-2 blox"   >
+
+
+          <!-- BLOX START --> 
+
+            <!-- TOP ROW -->
+
+           	<div class="cell seasonrow {{BloxCtrl.getCurrentSeason(season)}}" seasonrow-{{BloxCtrl.getVisibility(season)}}>
+              <h2 ng-show="!blox.edit" ng-click="BloxCtrl.editBloxToggle(blox)" class="bloxName intro1" data-step="1" >{{blox.name}}</h2>
+              <p class="small" ng-show="!blox.edit">{{blox.area}} sqm</p>
+              <a class="editLink fa fa-edit" ng-click="BloxCtrl.editBloxToggle(blox)" ng-show="!blox.edit" title="Edit area"></a>
+              <a class="editLink fa fa-trash"  ng-click="BloxCtrl.removeBloxPrompt(season,blox)" ng-show="!blox.edit" title="Delete this area" ></a>
+              <label ng-show="blox.edit">Name:</label>
+              <input ng-model="blox.name" ng-show="blox.edit"  ng-change="BloxCtrl.updateBlox(season,blox)">
+              <label ng-show="blox.edit">Surface area:</label>
+              <input ng-model="blox.area" ng-show="blox.edit" ng-change="BloxCtrl.updateBlox(season,blox)">
+              
+              <a class="editLink" ng-click="BloxCtrl.editBloxToggle(blox)" ng-show="blox.edit">Save</a>
+            </div>
+        
+            
+            <div class="seasonColumn" ng-show="season.visible">
+              <div class="cell  {{BloxCtrl.getStripes(month)}}" ng-repeat="month in blox.months" >
+              	<div class="emptyCell {{BloxCtrl.getCategory(month)}} {{month.info.conflict}} month{{month.info.status}} " ng-mouseover="month.showActions=true" ng-mouseleave="month.showActions=false">    
+
+                  <!-- MAIN ROW -->
+
+                  <div class="plantRow" ng-show='!month.edit && !month.companionEdit1 && !month.companionEdit2'>
+                      <h3 ng-show="month.info.status!='' && !month.edit" class="monthName" ng-click="BloxCtrl.logDetails(season,blox,month)">{{month.info.plant[0].name}} </h3>
+                      <p class="plantNumber" title="{{month.info.plant[0].sqm}} per sqm" uib-popover-html="BloxCtrl.getPlantNumberInfo(month,0)" popover-trigger="mouseenter" popover-placement="auto right">{{BloxCtrl.getPlantNumber(blox,month,0)}} </p>
+                      <div class="plantActions" ng-show="month.showActions && month.info.status!=''">
+                         <a class="editLink fa fa-scissors" ng-click="BloxCtrl.endBed(season,month,blox)" ng-show="BloxCtrl.showEndPlant(season,month,blox,0)" title="Clear this area early" ></a>
+
+                          <a class="editLink fa fa-trash" ng-click="BloxCtrl.clearMonth(season,month,blox)" ng-show="month.info.status=='start' && !month.edit  && month.info.status!='continued'" title="Clear all"></a>
+
+
+                       
+                           <a class="editLink fa fa-user-plus" ng-click="BloxCtrl.companionMonthToggle(month)" ng-show="BloxCtrl.hasCompanions(season,blox,month)" title="Add companion plants"></a>
+                           <a class="editLink fa fa-retweet" ng-click="BloxCtrl.editMonthToggle(month)" ng-show="month.info.status=='start' && !month.edit  && month.info.status!='continued'" title="Change plant selection"></a>
+
+
+                      </div>
+                      <a class="editLink fa fa-plus-square fullEdit" ng-click="BloxCtrl.editMonthToggle(month)" ng-show="month.showActions && month.info.status=='' && !month.edit " title="Plant something" ></a> 
+                      <div class="plantStatus" ng-show="month.info.status=='start' && !month.edit">
+                          <span class="fa fa-{{BloxCtrl.checkMonth(blox,month,month.info.plant[0],season)}}" uib-popover-html="BloxCtrl.getMonthsList(month.info.plant[0])" popover-trigger="mouseenter" popover-placement="auto right" ></span>
+                        <span class="fa fa-{{BloxCtrl.checkRecommended(month)}}" uib-popover-html="BloxCtrl.getRecommendedError(month)" popover-trigger="mouseenter" popover-placement="auto right"></span>
+                      </div> 
+                  </div>
+
+                   <!-- Select dropdown for main plant-->
+                   <div class="plantDrop" ng-show="month.edit">
+                        <label ng-show="!month.info.recommended">What do you want to plant here? </label>
+                        <label ng-show="month.info.recommended">Recommended category: {{BloxCtrl.getRecommendedLabel(month)}} </label>
+                        <ui-select ng-model="month.info.plant[0]" theme="bootstrap" on-select="BloxCtrl.updateMonth(season,month,blox)"  title="Choose a plant" ng-blur="BloxCtrl.editMonthToggle(month)" >
+                          <ui-select-match placeholder="Select a plant">
+                            <span ng-bind="$select.selected.name"></span>
+                          </ui-select-match>
+                          <ui-select-choices repeat="plant in (BloxCtrl.plants | filter: $select.search) track by plant.id" group-by="'category'" >
+                            <div class="fa fa-{{BloxCtrl.checkMonth(blox,month,plant,season)}}">
+                              <span ng-bind="plant.name" class="plantName "></span><br>
+                              <span class="plantDetails">{{plant.length}} months to harvest
+                              </span>
+
+                            </div>
+                          </ui-select-choices>
+                        </ui-select>
+                        <a class="editLink" ng-click="BloxCtrl.editMonthToggle(month)" style="margin-left:5px" >Cancel</a>
+                    </div>
+                  <!-- Row for first companion -->
+
+                  <div class="plantRow {{month.info.plant[1].category}}" ng-show='!month.edit && month.info.plant[1] && !month.companionEdit1 && !month.companionEdit2'>
+                      <h3 ng-show="month.info.status!='' && !month.edit" class="monthNameSmall" ng-click="BloxCtrl.logDetails(month)">{{month.info.plant[1].name}} </h3>
+                      
+                      <p class="plantNumber" title="{{month.info.plant[1].sqm}} per sqm" uib-popover-html="BloxCtrl.getPlantNumberInfo(month,1)" popover-trigger="mouseenter" popover-placement="auto right">{{BloxCtrl.getPlantNumber(blox,month,1)}} </p>
+                      <div class="plantActions"  ng-show="month.showActions && month.info.status!=''">
+                          <a class="editLink fa fa-retweet" ng-click="BloxCtrl.companionMonthToggle(month,1)" ng-show="month.companion1start" title="Change companion"></a>
+                          <a class="editLink fa fa-trash" ng-click="BloxCtrl.clearCompanion(season,month,blox,1)" ng-show="month.companion1start" title="Remove companion"></a>
+
+                      </div>
+                       <div class="plantStatus" ng-show="month.info.status=='start' && !month.edit">
+                          <span class="fa fa-{{BloxCtrl.checkMonth(blox,month,month.info.plant[1],season)}}" uib-popover-html="BloxCtrl.getMonthsList(month.info.plant[1])" popover-trigger="mouseenter" popover-placement="auto right" ></span>
+                        
+                      </div> 
+                  </div>
+
+                   <!-- First companion dropdown -->
+                    <label ng-show="month.companionEdit1">Choose a companion</label>
+                        <ui-select ng-model="month.info.plant[1]" theme="bootstrap" on-select="BloxCtrl.addCompanion(season,month,blox,1)" ng-show="month.companionEdit1" title="Choose a companion" ng-blur="BloxCtrl.companionMonthToggle(month)">
+                          <ui-select-match placeholder="Select a companion">
+                            <span ng-bind="$select.selected.name"></span>
+                          </ui-select-match>
+                          <ui-select-choices repeat="plant in (BloxCtrl.getCompanions(month) | filter: $select.search) track by plant.id" group-by="'recommended'" group-filter="BloxCtrl.reverseOrderFilterFn" >
+                            <div class="fa fa-{{BloxCtrl.checkMonth(blox,month,plant,season)}}">
+                              <span ng-bind="plant.name" class="plantName "></span><br>
+                              <span class="plantDetails">{{plant.category}}
+                              </span>
+                              <span class="plantDetails">{{plant.length}} months to harvest
+                              </span>
+
+
+                            </div>
+                          </ui-select-choices>
+                        </ui-select>
+                         <a class="editLink" ng-click="BloxCtrl.companionMonthToggle(month)" ng-show="month.companionEdit1"  style="margin-left:5px">Cancel</a>
+
+                  <!-- Row for 2nd companion -->
+
+                  <div class="plantRow {{month.info.plant[2].category}}" ng-show='!month.edit && month.info.plant[2] && !month.companionEdit2'>
+                      <h3 ng-show="month.info.status!='' && !month.edit" class="monthNameSmall" ng-click="BloxCtrl.logDetails(month)">{{month.info.plant[2].name}} </h3>
+                      
+                      <p class="plantNumber" title="{{month.info.plant[2].sqm}} per sqm" uib-popover-html="BloxCtrl.getPlantNumberInfo(month,1)" popover-trigger="mouseenter" popover-placement="auto right">{{BloxCtrl.getPlantNumber(blox,month,2)}} </p>
+                      <div class="plantActions"  ng-show="month.showActions && month.info.status!=''">
+                           <a class="editLink fa fa-retweet" ng-click="BloxCtrl.companionMonthToggle(month,2)" ng-show="month.companion2start" title="Change companion"></a>
+                          <a class="editLink fa fa-trash" ng-click="BloxCtrl.clearCompanion(season,month,blox,2)" ng-show="month.companion2start" title="Remove companion"></a>
+                          
+
+                      </div>
+                       <div class="plantStatus" ng-show="month.info.status=='start' && !month.edit">
+                          <span class="fa fa-{{BloxCtrl.checkMonth(blox,month,month.info.plant[2],season)}}" uib-popover-html="BloxCtrl.getMonthsList(month.info.plant[2])" popover-trigger="mouseenter" popover-placement="auto right" ></span>
+                        
+                      </div> 
+                  </div>
+
+                 
+
+                  
+
+                        <!-- Second companion dropdown -->
+                          <label ng-show="month.companionEdit2">Choose a companion</label>
+                        <ui-select ng-model="month.info.plant[2]" theme="bootstrap" on-select="BloxCtrl.addCompanion(season,month,blox,2)" ng-show="month.companionEdit2" title="Choose a companion" ng-blur="BloxCtrl.companionMonthToggle(month)">
+                          <ui-select-match placeholder="Select a companion">
+                            <span ng-bind="$select.selected.name"></span>
+                          </ui-select-match>
+                          <ui-select-choices repeat="plant in (BloxCtrl.getCompanions(month) | filter: $select.search) track by plant.id" group-by="'recommended'" group-filter="BloxCtrl.reverseOrderFilterFn" >
+                            <div class="fa fa-{{BloxCtrl.checkMonth(blox,month,plant,season)}}">
+                              <span ng-bind="plant.name" class="plantName "></span><br>
+                              <span class="plantDetails">{{plant.length}} months to harvest
+                              </span>
+
+                            </div>
+                          </ui-select-choices>
+                        </ui-select>
+                      <a class="editLink" ng-click="BloxCtrl.companionMonthToggle(month)" ng-show="month.companionEdit2"  style="margin-left:5px">Cancel</a>
+                </div>
+              </div>
+            </div>
+         <!-- BLOX END -->
+
+     </div>
+     <div class="col-md-2 blox" style="width:{{BloxCtrl.cellWidth}}px" >
+     	 <div class="cell seasonrow addCell" data-step="2" data-intro="You can add as many areas as you want.">
+	     <a class="editLink largeLink fa fa-plus-square-o bedLink" ng-click="BloxCtrl.addBlox(season)"  ><span>New area</span></a>
+	     </div>
+       <div class="ratios seasonColumn" ng-show="season.visible" data-step="4" data-intro="In order to return carbon to the soil, ideally at least a 1/3 of what you grow should be in the carbon category each season." >
+         <h3>Season ratios:</h3>
+  	     <p class="green" style='width:{{BloxCtrl.getTotal(season,"Green",true)}}px'><strong>Green: </strong>{{BloxCtrl.getTotal(season,"Green")}}%</p><br>
+         <p class="roots" style='width:{{BloxCtrl.getTotal(season,"Roots",true)}}px'><strong>Roots: </strong>{{BloxCtrl.getTotal(season,"Roots")}}%</p><br>
+  	    <p class="heavy" style='width:{{BloxCtrl.getTotal(season,"Heavy",true)}}'px> <strong>Heavy: </strong>{{BloxCtrl.getTotal(season,"Heavy")}}%</p><br>
+  	     <p class="carbon" style='width:{{BloxCtrl.getTotal(season,"Carbon",true)}}px'><strong>Carbon: </strong>{{BloxCtrl.getTotal(season,"Carbon")}}%</p><br>
+       
+         <span class="redicon" ng-show="BloxCtrl.checkCarbonRatio(season)" style="margin-top:10px;display:block;"><strong>Low carbon ratio</strong><br>
+         Try to grow at least a third of your area from the Carbon category so you can return it to the soil.</span>
+          
+	     </div>
+       
+   	</div>
+    </div>
+
+    <!-- season ENDS -->
+    <div class="clearfix"></div>
+     <button  type="button" ng-click="BloxCtrl.addPreviousSeason()" class="btn  btn-primary " style="margin:10px 0 0 100px">Plan for previous season</button>
+     <button  type="button" ng-click="BloxCtrl.addSeason()" class="btn  btn-primary " style="margin:10px 0 0 10px">Plan for next season</button>
+    
+    
+  </div>
+
+
+
+ 
+    
+
+  
+       </div>
+
+
+
+   </form>
+   
+
+   </body>
+
+   </html>

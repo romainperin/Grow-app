@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" >
+ 
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Grow App - Login</title>
+
+</head>
+ 
+<body ng-controller="loginCtrl">
+
+    <div id="header" style="position:relative">
+             <img class="logo" src="/img/grow-logo.svg">
+        
+          <div class="logo-block">
+
+            <h1>Grow </h1>
+            <h4>Better soil, Better food. </h4>
+        </div>
+    </div>  
+
+  
+     
+    <div class="container login-container">
+       
+        <div class="loader" ng-show="loading">
+            <h2>Loading...</h2><br>
+            <div class='uil-rolling-css' style='transform:scale(0.3);'><div><div></div><div></div></div></div>
+        </div>
+        <div ng-show="!loading" class="login-form">
+            <h1>Login</h1>
+            <form class="form-signin clearfix" name="signinForm" role="form">
+                <div class="form-group" ng-class="{ 'has-error' : signinForm.email.$invalid }">
+                    <label>Email address</label>
+                    <input type="email" name="email" class="form-control" ng-model="user.email">
+                    <p class="help-block" ng-show="signinForm.email.$invalid">Enter a valid email.</p>
+                </div>
+                <div class="form-group" ng-class="{ 'has-error' : signinForm.password.$invalid }">
+                    <label>Password</label>
+                    <input type="password" name="password" class="form-control" ng-model="user.password" ng-minlength="3">
+                    <p class="help-block" ng-show="signinForm.password.$error.minlength">Min password length is 8 characters.</p>
+                   
+                </div>
+                 
+                 <div class="form-group form-group-small">
+                <button ng-disabled="!user.email || !user.password" type="button" ng-click="SignIn($event)" class="btn  btn-primary ">Log in</button></div>
+                <p style="color:red;" >{{regErrorMessage}}</p>
+                  </form>
+                 <h3>No account yet? <a href="#/register">Create one now</a></h3>
+                 <h3>Forgot your password? Don't panic. <a href="#/resetpassword">You can reset it</a></h3>
+             </div>
+           
+       <div class="beta">
+          <h2>Grow is currently in beta testing</h2>
+          <p>Please note that you will likely encounter a few bugs - and your data might need to be re-entered when further versions are released.</p>
+       </div>
+
+       </div>      
+       
+    
+        
+   <div class="introbg">
+
+
+
+           
+  <h1>How it works</h1>
+    
+      <h2>1./ Track what's growing in your garden, month by month, and plan ahead to maximise crop rotation. </h2>
+      <img class="d-block introSlide" src="/img/intro/intro1.png" >
+      
+      <h2>2./ Plant the right thing, at the right place, in the right time</h2>
+      <img class="d-block introSlide" src="/img/intro/intro2.png" >
+      <img class="d-block introSlide" src="/img/intro/intro3.png" style="margin-left: 100px">
+        
+</div>
+   
+     
+
+ 
+</body>
+</html>

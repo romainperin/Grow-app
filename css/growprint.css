@@ -1,0 +1,13 @@
+@media print {
+  body,#header,.currentCell{
+    background: #fff ;
+  }
+
+  .pastCell{
+    background: #ccc;
+  }
+
+  .stripes-Green,.stripes-Carbon,.stripes-Heavy{
+    background:none;
+  }
+}
